@@ -112,6 +112,11 @@
     --hover: var(--hover-light);
 }
 
+/* Disable slider transition when wrapper asks for no animation */
+.no-anim .slider-bg {
+    transition: none !important;
+}
+
 /* Forced dropdown mode (desktop overflow or explicit) */
 .header-tab-menu.dropdown-mode .btn-show-menu {
     display: flex;
@@ -124,7 +129,7 @@
 }
 
 .header-tab-menu.dropdown-mode .wrapper-tabs {
-    display: none;
+    display: flex;
     position: absolute;
     top: 100%;
     left: 0;
@@ -135,10 +140,19 @@
     flex-direction: column;
     min-width: 150px;
     z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity 140ms ease, transform 140ms ease, visibility 0s linear 140ms;
 }
 
 .header-tab-menu.dropdown-mode .wrapper-tabs.show {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 140ms ease, transform 140ms ease, visibility 0s;
 }
 
 .header-tab-menu.dropdown-mode .slider-bg {
@@ -255,6 +269,9 @@ a:hover {
     height: 50px;
     color: var(--color-header-fg);
     flex-wrap: nowrap;
+    position: sticky;
+    top: env(safe-area-inset-top, 0);
+    z-index: 50;
 }
 
 /* Generic content section container */
@@ -303,7 +320,8 @@ a:hover {
     font-size: var(--font-lg);
     position: relative;
     z-index: 2;
-    transition: var(--transition-standard);
+    /* Restrict transition to paint-only properties to avoid compounding */
+    transition: color 0.2s ease, background-color 0.2s ease;
     min-width: var(--tab-min-width);
     user-select: none;
 }
@@ -344,6 +362,7 @@ a:hover {
     fill: currentColor;
     stroke: currentColor;
     color: inherit; /* ensure svg computes currentColor from parent */
+    transition: color 0.2s ease;
 }
 
 /* Propagate parent color to all icon svgs inside generic buttons */
@@ -365,7 +384,8 @@ a:hover {
     border: 1px solid var(--color-soft-border);
     border-radius: var(--radius);
     cursor: pointer;
-    transition: var(--transition-standard);
+    /* Limit transition to common properties */
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     user-select: none;
     background: var(--color-surface);
     color: var(--color-text);
@@ -413,14 +433,19 @@ a:hover {
     width: 100%;
     height: 100%;
     background: var(--color-overlay);
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 150ms ease, visibility 0s linear 150ms;
 }
 
 .overlay-popup.show {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 150ms ease, visibility 0s;
 }
 
 .wrapper-popup {
@@ -432,6 +457,17 @@ a:hover {
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
+    transform: scale(0.98);
+    transition: transform 150ms ease;
+}
+
+.overlay-popup.show .wrapper-popup {
+    transform: scale(1);
+}
+
+/* Prevent background scroll when dialogs are open */
+body.scroll-lock {
+    overflow: hidden;
 }
 
 /* Popup content (used in index.html) */
@@ -564,7 +600,7 @@ a:hover {
     }
 
     .wrapper-tabs {
-        display: none;
+        display: flex;
         position: absolute;
         top: 100%;
         left: 0;
@@ -575,10 +611,19 @@ a:hover {
         flex-direction: column;
         min-width: 150px;
         z-index: 10;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(6px);
+        pointer-events: none;
+        transition: opacity 140ms ease, transform 140ms ease, visibility 0s linear 140ms;
     }
 
     .wrapper-tabs.show {
-        display: flex;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+        transition: opacity 140ms ease, transform 140ms ease, visibility 0s;
     }
 
     /* Hide slider pill in dropdown layout */

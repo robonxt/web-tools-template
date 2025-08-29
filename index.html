@@ -39,15 +39,15 @@
 
 <body>
     <div class="container">
-        <div class="overlay-popup" id="popup-settings" aria-hidden="true">
-            <div class="wrapper-popup">
+        <div class="overlay-popup" id="popup-settings" role="dialog" aria-modal="true" aria-labelledby="heading-settings" aria-hidden="true">
+            <div class="wrapper-popup" tabindex="-1">
                 <button class="btn-popup-close svg-button" id="btn-popup-close-settings" aria-label="Close">
                     <svg viewBox="0 0 24 24">
                         <use href="assets/icon/icon-close.svg#icon-close" />
                     </svg>
                 </button>
                 <div class="content-popup" id="content-settings">
-                    <h2>Settings</h2>
+                    <h2 id="heading-settings">Settings</h2>
                     <div class="settings-grid">
                         <button id="btn-toggle-theme" class="svg-button settings-button" title="Toggle Theme"
                             aria-label="Toggle Theme">
@@ -66,15 +66,15 @@
                 </div>
             </div>
         </div>
-        <div class="overlay-popup" id="popup-info" aria-hidden="true">
-            <div class="wrapper-popup">
+        <div class="overlay-popup" id="popup-info" role="dialog" aria-modal="true" aria-labelledby="heading-info" aria-hidden="true">
+            <div class="wrapper-popup" tabindex="-1">
                 <button class="btn-popup-close svg-button" id="btn-popup-close-info" aria-label="Close">
                     <svg viewBox="0 0 24 24">
                         <use href="assets/icon/icon-close.svg#icon-close" />
                     </svg>
                 </button>
                 <div class="content-popup" id="content-info">
-                    <h2>About this Template</h2>
+                    <h2 id="heading-info">About this Template</h2>
                     <p>Reusable web template with header, tabs, popups, and PWA offline support.</p>
                     <p>Edit this content to document your site. Include quick tips or links.</p>
                 </div>
