@@ -2,15 +2,17 @@
 :root {
     /* Theme-independent variables */
     --spacing: 0.5rem;
-    --mobile-spacing: 0.25rem;
     --radius: 8px;
     --font-sm: 0.75rem;
     --font-md: 1.1rem;
     --font-lg: 1.3rem;
     --font-family: "DejaVu Sans", "DejaVu Sans Book", "DejaVu Sans Condensed", sans-serif;
+
     --max-width: 800px;
     --mobile-max-width: 400px;
     --transition-standard: all 0.2s ease;
+    /* Dedicated transition for the tab slider */
+    --transition-slider: 220ms cubic-bezier(.22, 1, .36, 1);
     --min-height: 400px;
 
     /* Component dimensions */
@@ -34,6 +36,46 @@
     --primary-900: color-mix(in srgb, var(--primary), black 60%);
     --on-primary: #ffffff;
     /* JS may flip to black for very light primaries */
+
+    /* Secondary theme color (guideline palette) */
+    --secondary: #f2994a;
+    --secondary-50: color-mix(in srgb, var(--secondary), white 92%);
+    --secondary-100: color-mix(in srgb, var(--secondary), white 85%);
+    --secondary-200: color-mix(in srgb, var(--secondary), white 70%);
+    --secondary-300: color-mix(in srgb, var(--secondary), white 55%);
+    --secondary-400: color-mix(in srgb, var(--secondary), white 35%);
+    --secondary-500: var(--secondary);
+    --secondary-600: color-mix(in srgb, var(--secondary), black 15%);
+    --secondary-700: color-mix(in srgb, var(--secondary), black 30%);
+    --secondary-800: color-mix(in srgb, var(--secondary), black 45%);
+    --secondary-900: color-mix(in srgb, var(--secondary), black 60%);
+    --on-secondary: #ffffff;
+
+    /* Semantic color aliases (use these throughout components) */
+    --color-bg: var(--bg-main);
+    --color-surface: var(--bg-surface);
+    --color-border: var(--border-color);
+    --color-soft-border: var(--soft-border);
+    --color-surface-hover: var(--surface-hover);
+    --color-text: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-link: var(--link-color);
+    --color-header-bg: var(--primary-600);
+    --color-header-fg: var(--on-primary);
+    --color-header-btn-border: var(--header-btn-border);
+    --color-header-btn-hover-border: var(--header-btn-hover-border);
+    --color-header-btn-hover-bg: var(--header-btn-hover-bg);
+    --color-tab-fg: var(--tab-fg);
+    --color-tab-hover-fg: var(--tab-hover-fg);
+    --color-tab-active-fg: var(--tab-active-fg);
+    --color-header-pill-bg: var(--header-pill-bg);
+    --color-accent-bg: var(--primary-500);
+    --color-accent-fg: var(--on-primary);
+    --color-accent-hover-bg: var(--primary-600);
+    --color-header-pill-bg: var(--header-pill-bg);
+    --focus-outline: var(--primary-500);
+    --color-overlay: color-mix(in srgb, black 50%, transparent);
+    --color-code-bg: color-mix(in srgb, var(--text-primary) 10%, transparent);
 
     /* Links default to a primary shade; dark theme overrides below */
     --link-color: var(--primary-700);
@@ -60,6 +102,59 @@
     --header-btn-border: rgba(255, 255, 255, 0.3);
     --header-btn-hover-border: rgba(255, 255, 255, 0.5);
     --header-btn-hover-bg: rgba(255, 255, 255, 0.1);
+
+    /* Icon color on header (light theme default: white) */
+    --icon-on-header: #ffffff;
+
+    /* Theming aliases (semantic tokens) */
+    --hover-light: var(--primary-50);
+    --hover-dark: var(--primary-300);
+    --hover: var(--hover-light);
+}
+
+/* Forced dropdown mode (desktop overflow or explicit) */
+.header-tab-menu.dropdown-mode .btn-show-menu {
+    display: flex;
+}
+
+/* Remove pill container visuals when dropdown is active */
+.header-tab-menu.dropdown-mode {
+    background: none;
+    border-radius: 0;
+}
+
+.header-tab-menu.dropdown-mode .wrapper-tabs {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--color-header-bg);
+    border-radius: var(--radius);
+    padding: var(--spacing);
+    box-shadow: var(--shadow);
+    flex-direction: column;
+    min-width: 150px;
+    z-index: 10;
+}
+
+.header-tab-menu.dropdown-mode .wrapper-tabs.show {
+    display: flex;
+}
+
+.header-tab-menu.dropdown-mode .slider-bg {
+    display: none;
+}
+
+.header-tab-menu.dropdown-mode .btn-tab {
+    width: 100%;
+    text-align: left;
+    color: var(--tab-fg);
+    padding: 8px 16px;
+}
+
+.header-tab-menu.dropdown-mode .btn-tab.active {
+    color: var(--tab-active-fg);
+    background: var(--header-pill-bg);
 }
 
 /* Dark theme */
@@ -85,11 +180,15 @@
     /* Dark theme tab text tuning */
     --tab-fg: color-mix(in srgb, var(--on-primary) 60%, transparent);
     --tab-hover-fg: var(--on-primary);
-}
 
-/* Dark theme specific component tweaks */
-[data-theme="dark"] .container-header-bar {
-    background-color: var(--primary-700);
+    /* Dark theme header icon color: black, per requirement */
+    --icon-on-header: #000000;
+
+    /* Switch semantic alias to dark source */
+    --hover: var(--hover-dark);
+
+    /* Dark header background alias */
+    --color-header-bg: var(--primary-700);
 }
 
 /* CSS Reset and Base Styles */
@@ -109,15 +208,15 @@
 
 body {
     line-height: 1.6;
-    color: var(--text-primary);
-    background-color: var(--bg-main);
+    color: var(--color-text);
+    background-color: var(--color-bg);
     min-height: 100vh;
     overscroll-behavior-y: contain;
 }
 
 /* Global link styles */
 a {
-    color: var(--link-color);
+    color: var(--color-link);
     text-decoration: none;
 }
 
@@ -127,7 +226,7 @@ a:hover {
 
 /* Accessible focus indicator */
 :focus-visible {
-    outline: 3px solid var(--primary-500);
+    outline: 3px solid var(--focus-outline);
     outline-offset: 2px;
 }
 
@@ -138,57 +237,58 @@ a:hover {
     flex: 1;
     width: 100%;
     max-width: var(--max-width);
-    margin: var(--mobile-spacing) auto;
-    padding: var(--mobile-spacing);
+    margin: var(--spacing) auto;
+    padding: var(--spacing);
 }
 
-/* Common container properties */
+/* Header bar container */
 .container-header-bar {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    margin-bottom: var(--mobile-spacing);
+    margin-bottom: var(--spacing);
     padding: var(--spacing);
     gap: var(--spacing);
-}
-
-/* Specific container properties */
-.container-header-bar {
-    background-color: var(--primary-600);
+    background-color: var(--color-header-bg);
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 50px;
-    color: var(--on-primary);
+    color: var(--color-header-fg);
+    flex-wrap: nowrap;
 }
 
 /* Generic content section container */
 .section {
-    background-color: var(--bg-surface);
+    background-color: var(--color-surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: var(--spacing);
-    margin-bottom: var(--mobile-spacing);
+    margin-bottom: var(--spacing);
 }
 
 /* Header & Navigation */
 
 .header-tab-menu {
-    background: color-mix(in srgb, var(--on-primary) 20%, transparent);
+    background: none;
     border-radius: 20px;
     display: inline-flex;
     position: relative;
+    flex: 1 1 auto;
+    min-width: 0; /* allow this region to shrink so controls remain visible */
 }
 
 .controls-header {
     display: flex;
     gap: var(--spacing);
     align-items: center;
+    flex: 0 0 auto;
+    white-space: nowrap;
 }
 
 .controls-header .svg-button {
     background: none;
-    color: var(--on-primary);
-    border: 1px solid var(--header-btn-border);
+    color: var(--icon-on-header);
+    border: 1px solid var(--color-header-btn-border);
 }
 
 /* Tab Navigation */
@@ -219,18 +319,22 @@ a:hover {
     background: var(--header-pill-bg);
     border-radius: 17px;
     height: calc(100% - 6px);
-    transition: var(--transition-standard);
+    /* Animate only what changes: width and transform */
+    transition: width var(--transition-slider), transform var(--transition-slider);
     z-index: 1;
     min-width: var(--tab-min-width);
     box-shadow: 0 2px 6px color-mix(in srgb, black 12%, transparent);
+    /* Drive position/size via CSS variables set by JS */
+    width: var(--slider-w, var(--tab-min-width));
+    transform: translateX(var(--slider-x, 0px));
 }
 
 /* Hamburger Menu */
 .btn-show-menu {
     display: none;
     background: none;
-    border: 1px solid var(--header-btn-border);
-    color: var(--on-primary);
+    border: 1px solid var(--color-header-btn-border);
+    color: var(--icon-on-header);
 }
 
 /* Ensure header/control SVGs follow text color */
@@ -239,20 +343,32 @@ a:hover {
 .header-tab-menu svg {
     fill: currentColor;
     stroke: currentColor;
+    color: inherit; /* ensure svg computes currentColor from parent */
 }
 
+/* Propagate parent color to all icon svgs inside generic buttons */
+.svg-button svg {
+    color: inherit;
+}
 
-
+/* Ensure external symbol usage inherits theme color as well */
+.controls-header use,
+.btn-show-menu use,
+.header-tab-menu use,
+.svg-button use {
+    fill: currentColor;
+    stroke: currentColor;
+}
 
 /* UI Elements - Buttons & Controls */
 .svg-button {
-    border: 1px solid var(--soft-border);
+    border: 1px solid var(--color-soft-border);
     border-radius: var(--radius);
     cursor: pointer;
     transition: var(--transition-standard);
     user-select: none;
-    background: var(--bg-surface);
-    color: var(--text-primary);
+    background: var(--color-surface);
+    color: var(--color-text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -271,16 +387,12 @@ a:hover {
     stroke: currentColor;
 }
 
-.svg-button svg:not(:only-child) {
-    margin-right: 0;
-}
-
 .btn-popup-close {
     position: absolute;
     top: 10px;
     right: 10px;
-    border: 1px solid var(--border-color) !important;
-    color: var(--text-primary);
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text);
     box-shadow: var(--shadow);
     z-index: 1;
 }
@@ -288,9 +400,9 @@ a:hover {
 /* Disabled button state */
 .svg-button:disabled,
 .svg-button.disabled {
-    opacity: 0.1;
+    opacity: 0.5;
     cursor: not-allowed;
-    filter: grayscale(100%) blur(0.5px);
+    filter: grayscale(100%);
     pointer-events: none;
 }
 
@@ -300,7 +412,7 @@ a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: color-mix(in srgb, black 50%, transparent);
+    background: var(--color-overlay);
     display: none;
     justify-content: center;
     align-items: center;
@@ -312,7 +424,7 @@ a:hover {
 }
 
 .wrapper-popup {
-    background: var(--bg-surface);
+    background: var(--color-surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     max-width: 90%;
@@ -326,7 +438,7 @@ a:hover {
 .content-popup {
     padding: var(--spacing);
     border-radius: var(--radius);
-    color: var(--text-primary);
+    color: var(--color-text);
     line-height: 1.4;
 }
 
@@ -359,19 +471,14 @@ a:hover {
     margin: 0.1em 0;
 }
 
-.content-popup a {
-    color: var(--link-color);
-    text-decoration: none;
-}
-
 .content-popup code {
-    background: var(--bg-surface);
+    background: var(--color-code-bg);
     padding: 0.2em 0.4em;
     border-radius: 3px;
     font-family: monospace;
     font-size: 0.9em;
+    border: 1px solid var(--color-soft-border);
 }
-
 
 /* Theme toggle button icons */
 .icon-theme-light,
@@ -408,8 +515,8 @@ a:hover {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary-500);
-    color: var(--on-primary);
+    background-color: var(--color-accent-bg);
+    color: var(--color-accent-fg);
     padding: 12px;
     font-size: 16px;
     border-radius: var(--radius);
@@ -424,7 +531,7 @@ a:hover {
 }
 
 .settings-button:hover {
-    background-color: var(--primary-600);
+    background-color: var(--color-accent-hover-bg);
 }
 
 /* Custom Scrollbar */
@@ -434,20 +541,20 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-surface);
+    background: var(--color-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--border-color);
+    background: var(--color-border);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
+    background: var(--color-text-secondary);
 }
 
 /* narrow screens only */
-@media (max-width: 400px) {
+@media (max-width: 399.98px) {
     :root {
         --spacing: 0.25rem;
     }
@@ -461,18 +568,13 @@ a:hover {
         position: absolute;
         top: 100%;
         left: 0;
-        background: var(--primary-600);
+        background: var(--color-header-bg);
         border-radius: var(--radius);
-        padding: var(--mobile-spacing);
+        padding: var(--spacing);
         box-shadow: var(--shadow);
         flex-direction: column;
         min-width: 150px;
         z-index: 10;
-    }
-
-    /* Dark theme dropdown background alignment with header */
-    [data-theme="dark"] .wrapper-tabs {
-        background: var(--primary-700);
     }
 
     .wrapper-tabs.show {
@@ -511,14 +613,17 @@ a:hover {
         position: relative;
         flex-direction: row;
         align-items: center;
+        background: color-mix(in srgb, var(--on-primary) 20%, transparent);
+        border-radius: 20px;
+        padding: 3px; /* aligns with slider top/left: 3px and height calc(100% - 6px) */
+        max-width: 100%;
+        overflow: hidden; /* keep content from pushing controls */
     }
 
     .btn-tab {
         min-width: var(--tab-min-width);
         text-align: center;
     }
-
-    /* removed duplicate .btn-tab.active; global rule already applies */
 
     .slider-bg {
         display: block;
@@ -527,13 +632,13 @@ a:hover {
 
 @media (hover: hover) {
     .controls-header .svg-button:hover {
-        color: color-mix(in srgb, var(--on-primary) 80%, transparent);
+        color: var(--hover);
         background: var(--header-btn-hover-bg);
         border-color: var(--header-btn-hover-border);
     }
 
     .btn-tab:hover {
-        color: var(--tab-hover-fg);
+        color: var(--hover);
     }
 
     .btn-tab.active:hover {
@@ -549,12 +654,13 @@ a:hover {
     }
 
     .btn-show-menu:hover {
+        color: var(--hover);
         background: var(--header-btn-hover-bg);
         border-color: var(--header-btn-hover-border);
     }
 
     .svg-button:hover {
-        background: var(--surface-hover);
+        background: var(--color-surface-hover);
         transform: translateY(-1px);
         box-shadow: var(--shadow);
     }
