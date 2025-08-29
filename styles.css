@@ -1,0 +1,586 @@
+/* Theme Variables */
+:root {
+    /* Theme-independent variables */
+    --spacing: 0.5rem;
+    --mobile-spacing: 0.25rem;
+    --radius: 8px;
+    --font-sm: 0.75rem;
+    --font-md: 1.1rem;
+    --font-lg: 1.3rem;
+    --font-family: "DejaVu Sans", "DejaVu Sans Book", "DejaVu Sans Condensed", sans-serif;
+    --max-width: 800px;
+    --mobile-max-width: 400px;
+    --transition-standard: all 0.2s ease;
+    --min-height: 400px;
+
+    /* Component dimensions */
+    --button-height: 44px;
+    --button-min-width: 44px;
+    --tab-min-width: 80px;
+
+    /* Theme color: set this single value to change your app color */
+    --primary: #67bed2;
+
+    /* Auto-derived palette (JS will compute; these are safe fallbacks) */
+    --primary-50: color-mix(in srgb, var(--primary), white 92%);
+    --primary-100: color-mix(in srgb, var(--primary), white 85%);
+    --primary-200: color-mix(in srgb, var(--primary), white 70%);
+    --primary-300: color-mix(in srgb, var(--primary), white 55%);
+    --primary-400: color-mix(in srgb, var(--primary), white 35%);
+    --primary-500: var(--primary);
+    --primary-600: color-mix(in srgb, var(--primary), black 15%);
+    --primary-700: color-mix(in srgb, var(--primary), black 30%);
+    --primary-800: color-mix(in srgb, var(--primary), black 45%);
+    --primary-900: color-mix(in srgb, var(--primary), black 60%);
+    --on-primary: #ffffff;
+    /* JS may flip to black for very light primaries */
+
+    /* Links default to a primary shade; dark theme overrides below */
+    --link-color: var(--primary-700);
+
+    /* Header pill (active tab slider) background */
+    --header-pill-bg: var(--on-primary);
+
+    /* Active tab text color (contrasts with pill) */
+    --tab-active-fg: var(--primary-800);
+
+    /* Inactive tab text colors (desktop and mobile) */
+    --tab-fg: color-mix(in srgb, var(--on-primary) 70%, transparent);
+    --tab-hover-fg: color-mix(in srgb, var(--on-primary) 85%, transparent);
+
+    /* Light theme (default) */
+    --bg-main: #f5f5f5;
+    --bg-surface: #f8f9fa;
+    --border-color: #ccc;
+    --text-primary: #000;
+    --text-secondary: #777;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --surface-hover: #f0f0f0;
+    --soft-border: rgba(0, 0, 0, 0.08);
+    --header-btn-border: rgba(255, 255, 255, 0.3);
+    --header-btn-hover-border: rgba(255, 255, 255, 0.5);
+    --header-btn-hover-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --link-color: var(--primary-300);
+    --bg-main: #121212;
+    --bg-surface: #1E1E1E;
+    --border-color: #333;
+    --text-primary: #FFFFFF;
+    --text-secondary: #AAAAAA;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --surface-hover: #2A2A2A;
+    --soft-border: rgba(255, 255, 255, 0.08);
+    --header-btn-border: rgba(255, 255, 255, 0.2);
+    --header-btn-hover-border: rgba(255, 255, 255, 0.4);
+    --header-btn-hover-bg: rgba(255, 255, 255, 0.05);
+
+    /* Black pill on dark theme */
+    --header-pill-bg: #000000;
+    /* Light text on black pill */
+    --tab-active-fg: var(--on-primary);
+
+    /* Dark theme tab text tuning */
+    --tab-fg: color-mix(in srgb, var(--on-primary) 60%, transparent);
+    --tab-hover-fg: var(--on-primary);
+}
+
+/* Dark theme specific component tweaks */
+[data-theme="dark"] .container-header-bar {
+    background-color: var(--primary-700);
+}
+
+/* CSS Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-main);
+    min-height: 100vh;
+    overscroll-behavior-y: contain;
+}
+
+/* Global link styles */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Accessible focus indicator */
+:focus-visible {
+    outline: 3px solid var(--primary-500);
+    outline-offset: 2px;
+}
+
+/* Layout & Container Styles */
+
+/* this is the main container that everything is inside of*/
+.container {
+    flex: 1;
+    width: 100%;
+    max-width: var(--max-width);
+    margin: var(--mobile-spacing) auto;
+    padding: var(--mobile-spacing);
+}
+
+/* Common container properties */
+.container-header-bar {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: var(--mobile-spacing);
+    padding: var(--spacing);
+    gap: var(--spacing);
+}
+
+/* Specific container properties */
+.container-header-bar {
+    background-color: var(--primary-600);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    color: var(--on-primary);
+}
+
+/* Generic content section container */
+.section {
+    background-color: var(--bg-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--spacing);
+    margin-bottom: var(--mobile-spacing);
+}
+
+/* Header & Navigation */
+
+.header-tab-menu {
+    background: color-mix(in srgb, var(--on-primary) 20%, transparent);
+    border-radius: 20px;
+    display: inline-flex;
+    position: relative;
+}
+
+.controls-header {
+    display: flex;
+    gap: var(--spacing);
+    align-items: center;
+}
+
+.controls-header .svg-button {
+    background: none;
+    color: var(--on-primary);
+    border: 1px solid var(--header-btn-border);
+}
+
+/* Tab Navigation */
+
+.btn-tab {
+    color: var(--tab-fg);
+    padding: 6px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 17px;
+    font-size: var(--font-lg);
+    position: relative;
+    z-index: 2;
+    transition: var(--transition-standard);
+    min-width: var(--tab-min-width);
+    user-select: none;
+}
+
+.btn-tab.active {
+    color: var(--tab-active-fg);
+}
+
+.slider-bg {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    background: var(--header-pill-bg);
+    border-radius: 17px;
+    height: calc(100% - 6px);
+    transition: var(--transition-standard);
+    z-index: 1;
+    min-width: var(--tab-min-width);
+    box-shadow: 0 2px 6px color-mix(in srgb, black 12%, transparent);
+}
+
+/* Hamburger Menu */
+.btn-show-menu {
+    display: none;
+    background: none;
+    border: 1px solid var(--header-btn-border);
+    color: var(--on-primary);
+}
+
+/* Ensure header/control SVGs follow text color */
+.controls-header svg,
+.btn-show-menu svg,
+.header-tab-menu svg {
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+
+
+
+/* UI Elements - Buttons & Controls */
+.svg-button {
+    border: 1px solid var(--soft-border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition-standard);
+    user-select: none;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: auto;
+    min-height: var(--button-height);
+    min-width: var(--button-min-width);
+    padding: var(--spacing);
+    gap: calc(var(--spacing) * 0.5);
+}
+
+.svg-button svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+.svg-button svg:not(:only-child) {
+    margin-right: 0;
+}
+
+.btn-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary);
+    box-shadow: var(--shadow);
+    z-index: 1;
+}
+
+/* Disabled button state */
+.svg-button:disabled,
+.svg-button.disabled {
+    opacity: 0.1;
+    cursor: not-allowed;
+    filter: grayscale(100%) blur(0.5px);
+    pointer-events: none;
+}
+
+.overlay-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: color-mix(in srgb, black 50%, transparent);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.overlay-popup.show {
+    display: flex;
+}
+
+.wrapper-popup {
+    background: var(--bg-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    max-width: 90%;
+    width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Popup content (used in index.html) */
+.content-popup {
+    padding: var(--spacing);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.content-popup h1 {
+    font-size: 2em;
+    margin-bottom: 1em;
+}
+
+.content-popup h2 {
+    font-size: 1.5em;
+    margin: 1em 0;
+}
+
+.content-popup h3 {
+    font-size: 1.2em;
+    margin: 1em 0;
+}
+
+.content-popup p {
+    margin: 0.8em 0;
+}
+
+.content-popup ul,
+.content-popup ol {
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.content-popup li {
+    margin: 0.1em 0;
+}
+
+.content-popup a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.content-popup code {
+    background: var(--bg-surface);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+
+/* Theme toggle button icons */
+.icon-theme-light,
+.icon-theme-dark {
+    display: none;
+}
+
+[data-theme="light"] .icon-theme-dark {
+    display: inline;
+}
+
+[data-theme="light"] .icon-theme-light {
+    display: none;
+}
+
+[data-theme="dark"] .icon-theme-dark {
+    display: none;
+}
+
+[data-theme="dark"] .icon-theme-light {
+    display: inline;
+}
+
+/* Settings Grid Layout */
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing);
+    margin-top: var(--spacing);
+}
+
+.settings-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-500);
+    color: var(--on-primary);
+    padding: 12px;
+    font-size: 16px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-standard);
+    min-height: 80px;
+}
+
+.settings-button svg {
+    margin-bottom: 8px;
+}
+
+.settings-button:hover {
+    background-color: var(--primary-600);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* narrow screens only */
+@media (max-width: 400px) {
+    :root {
+        --spacing: 0.25rem;
+    }
+
+    .btn-show-menu {
+        display: flex;
+    }
+
+    .wrapper-tabs {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: var(--primary-600);
+        border-radius: var(--radius);
+        padding: var(--mobile-spacing);
+        box-shadow: var(--shadow);
+        flex-direction: column;
+        min-width: 150px;
+        z-index: 10;
+    }
+
+    /* Dark theme dropdown background alignment with header */
+    [data-theme="dark"] .wrapper-tabs {
+        background: var(--primary-700);
+    }
+
+    .wrapper-tabs.show {
+        display: flex;
+    }
+
+    /* Hide slider pill in dropdown layout */
+    .slider-bg {
+        display: none;
+    }
+
+    .btn-tab {
+        width: 100%;
+        text-align: left;
+        color: var(--tab-fg);
+        padding: 8px 16px;
+    }
+
+    .btn-tab.active {
+        color: var(--tab-active-fg);
+        background: var(--header-pill-bg);
+    }
+}
+
+@media (min-width: 400px) {
+    :root {
+        --spacing: 0.5rem;
+    }
+
+    .btn-show-menu {
+        display: none;
+    }
+
+    .wrapper-tabs {
+        display: inline-flex;
+        position: relative;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .btn-tab {
+        min-width: var(--tab-min-width);
+        text-align: center;
+    }
+
+    /* removed duplicate .btn-tab.active; global rule already applies */
+
+    .slider-bg {
+        display: block;
+    }
+}
+
+@media (hover: hover) {
+    .controls-header .svg-button:hover {
+        color: color-mix(in srgb, var(--on-primary) 80%, transparent);
+        background: var(--header-btn-hover-bg);
+        border-color: var(--header-btn-hover-border);
+    }
+
+    .btn-tab:hover {
+        color: var(--tab-hover-fg);
+    }
+
+    .btn-tab.active:hover {
+        color: var(--tab-active-fg);
+    }
+
+    .btn-tab:not(.active):hover {
+        background: color-mix(in srgb, var(--on-primary) 12%, transparent);
+    }
+
+    .wrapper-tabs .btn-tab.active:hover~.slider-bg {
+        box-shadow: 0 0 0 2px var(--primary-300), 0 3px 8px color-mix(in srgb, black 16%, transparent);
+    }
+
+    .btn-show-menu:hover {
+        background: var(--header-btn-hover-bg);
+        border-color: var(--header-btn-hover-border);
+    }
+
+    .svg-button:hover {
+        background: var(--surface-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow);
+    }
+
+    .svg-button:disabled:hover,
+    .svg-button.disabled:hover {
+        background-color: transparent;
+    }
+
+    .btn-popup-close:hover {
+        border-color: var(--primary-500) !important;
+    }
+
+    .content-popup a:hover {
+        text-decoration: underline;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+
+    .svg-button:hover,
+    .btn-tab:hover {
+        transform: none !important;
+    }
+}

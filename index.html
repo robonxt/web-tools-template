@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, orientation=portrait, maximum-scale=1.0, user-scalable=no">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <title>Web Template Starter</title>
+    <meta name="description" content="Reusable header/toolbar/tabs starter with PWA support.">
+    <meta property="og:title" content="Web Template Starter">
+    <meta property="og:description" content="Reusable header/toolbar/tabs starter with PWA support.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="assets/icon/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon/android-chrome-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/icon/android-chrome-512.png">
+    <link rel="apple-touch-icon" href="assets/icon/apple-touch-icon.png">
+    <meta name="msapplication-TileImage" content="assets/icon/mstile.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="manifest.json">
+    <script>
+        // Apply saved or preferred theme before first paint to avoid flash
+        (function () {
+            try {
+                var saved = localStorage.getItem('theme');
+                var theme = saved ? saved : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <svg style="display: none;">
+        <use href="assets/icon/icon-menu.svg#icon-menu" />
+        <use href="assets/icon/icon-sun.svg#icon-sun" />
+        <use href="assets/icon/icon-moon.svg#icon-moon" />
+        <use href="assets/icon/icon-info.svg#icon-info" />
+        <use href="assets/icon/icon-refresh.svg#icon-refresh" />
+        <use href="assets/icon/icon-close.svg#icon-close" />
+        <use href="assets/icon/icon-settings.svg#icon-settings" />
+    </svg>
+    <div class="container">
+        <div class="overlay-popup" id="popup-settings" aria-hidden="true">
+            <div class="wrapper-popup">
+                <button class="btn-popup-close svg-button" id="btn-popup-close-settings" aria-label="Close">
+                    <svg viewBox="0 0 24 24">
+                        <use href="assets/icon/icon-close.svg#icon-close" />
+                    </svg>
+                </button>
+                <div class="content-popup" id="content-settings">
+                    <h2>Settings</h2>
+                    <div class="settings-grid">
+                        <button id="btn-toggle-theme" class="svg-button settings-button" title="Toggle Theme"
+                            aria-label="Toggle Theme">
+                            <svg viewBox="0 0 24 24" width="18" height="18">
+                                <use class="icon-theme-light" href="assets/icon/icon-sun.svg#icon-sun" />
+                                <use class="icon-theme-dark" href="assets/icon/icon-moon.svg#icon-moon" />
+                            </svg>
+                        </button>
+                        <button id="btn-update-app" class="svg-button settings-button" title="Install Updates"
+                            aria-label="Install Updates">
+                            <svg viewBox="0 0 24 24" width="18" height="18">
+                                <use href="assets/icon/icon-refresh.svg#icon-refresh" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay-popup" id="popup-info" aria-hidden="true">
+            <div class="wrapper-popup">
+                <button class="btn-popup-close svg-button" id="btn-popup-close-info" aria-label="Close">
+                    <svg viewBox="0 0 24 24">
+                        <use href="assets/icon/icon-close.svg#icon-close" />
+                    </svg>
+                </button>
+                <div class="content-popup" id="content-info">
+                    <h2>About this Template</h2>
+                    <p>Reusable web template with header, tabs, popups, and PWA offline support.</p>
+                    <p>Edit this content to document your site. Include quick tips or links.</p>
+                </div>
+            </div>
+        </div>
+        <div class="container-header-bar">
+            <div class="header-tab-menu">
+                <button class="btn-show-menu svg-button" id="btn-show-menu" aria-label="Menu">
+                    <svg viewBox="0 0 24 24">
+                        <use href="assets/icon/icon-menu.svg#icon-menu" />
+                    </svg>
+                </button>
+                <div class="wrapper-tabs" id="wrapper-tabs">
+                    <button class="btn-tab active" data-tab="home">Home</button>
+                    <button class="btn-tab" data-tab="about">About</button>
+                    <button class="btn-tab" data-tab="contact">Contact</button>
+                    <div class="slider-bg" id="slider-bg"></div>
+                </div>
+            </div>
+            <div class="controls-header">
+                <button class="svg-button" id="btn-show-settings" aria-label="Show Settings" title="Settings">
+                    <svg viewBox="0 0 24 24">
+                        <use href="assets/icon/icon-settings.svg#icon-settings" />
+                    </svg>
+                </button>
+                <button class="svg-button" id="btn-show-info" aria-label="Show Information" title="Info">
+                    <svg viewBox="0 0 24 24">
+                        <use href="assets/icon/icon-info.svg#icon-info" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="section" data-content="home">
+            <h3>Sample Content</h3>
+            <p>
+                This is your first tab's content area. Replace this with your app's home content,
+                components, or documentation.
+            </p>
+        </div>
+        <div class="section" data-content="about" hidden>About content.</div>
+        <div class="section" data-content="contact" hidden>Contact content.</div>
+    </div>
+    <script src="app.js" defer></script>
+</body>
+</html>
