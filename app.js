@@ -1,11 +1,11 @@
 (function () {
+    // Utility functions
     const qs = (sel, root = document) => root.querySelector(sel);
     const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
     const on = (el, type, handler, opts) => el && el.addEventListener(type, handler, opts);
     const attr = (el, name, value) => (value === undefined ? el.getAttribute(name) : el.setAttribute(name, value));
-    const setVar = (el, name, value) => el.style.setProperty(name, value);
 
-    // Service worker
+    // --- Service Worker --- //
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker
@@ -32,138 +32,202 @@
         });
     }
 
-    // Theme
+    // --- Theme Management --- //
     const THEME_KEY = 'theme';
     const setTheme = (next) => {
         attr(document.documentElement, 'data-theme', next);
         try { localStorage.setItem(THEME_KEY, next); } catch { /* ignore */ }
     };
 
-    // Popups
+    // --- Popup (Modal) Logic --- //
     function bindPopup(triggerBtn, popupEl, closeBtn) {
         if (!popupEl) return;
-        const wrap = popupEl.querySelector('.wrapper-popup');
+        const dialog = popupEl.querySelector('.popup-dialog');
         let lastFocus = null;
-        const qFocus = () => Array.from(popupEl.querySelectorAll(
-            'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
-        ));
-        const trap = (e) => {
+        const focusableElements = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+
+        const trapFocus = (e) => {
             if (e.key !== 'Tab') return;
-            const f = qFocus(); if (!f.length) return e.preventDefault();
-            const first = f[0], last = f[f.length - 1];
+            const focusable = Array.from(popupEl.querySelectorAll(focusableElements));
+            if (!focusable.length) return e.preventDefault();
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
             if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
             else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
         };
+
         const onEsc = (e) => { if (e.key === 'Escape') close(); };
+
         const open = () => {
             lastFocus = document.activeElement;
-            popupEl.classList.add('show'); attr(popupEl, 'aria-hidden', 'false');
+            popupEl.classList.add('is-visible');
+            attr(popupEl, 'aria-hidden', 'false');
             document.body.classList.add('scroll-lock');
-            on(popupEl, 'keydown', trap); on(popupEl, 'keydown', onEsc);
-            const f = qFocus(); (f[0] || wrap || popupEl).focus();
+            on(document, 'keydown', trapFocus);
+            on(document, 'keydown', onEsc);
+            const firstFocusable = popupEl.querySelector(focusableElements);
+            (firstFocusable || dialog || popupEl).focus();
         };
+
         const close = () => {
-            popupEl.classList.remove('show'); attr(popupEl, 'aria-hidden', 'true');
+            popupEl.classList.remove('is-visible');
+            attr(popupEl, 'aria-hidden', 'true');
             document.body.classList.remove('scroll-lock');
-            popupEl.removeEventListener('keydown', trap);
-            popupEl.removeEventListener('keydown', onEsc);
-            lastFocus && typeof lastFocus.focus === 'function' && lastFocus.focus();
+            document.removeEventListener('keydown', trapFocus);
+            document.removeEventListener('keydown', onEsc);
+            if (lastFocus && typeof lastFocus.focus === 'function') {
+                lastFocus.focus();
+            }
         };
+
         on(triggerBtn, 'click', open);
         on(closeBtn, 'click', close);
         on(popupEl, 'click', (e) => { if (e.target === popupEl) close(); });
     }
 
-    // Tabs
-    function initTabs({ wrapper, slider, menuBtn }) {
-        if (!wrapper || !slider) return;
-        const tabs = qsa('.btn-tab', wrapper);
-        const contents = qsa('[data-content]');
-        const header = wrapper.closest('.header-tab-menu');
-        let rafId = 0;
+    // --- Tab Navigation Logic --- //
+    function initTabs() {
+        const tabContainer = qs('#wrapper-tabs');
+        if (!tabContainer) return;
 
-        const current = () => qs('.btn-tab.active', wrapper) || tabs[0];
-        const activateByName = (name) => {
-            const t = name && tabs.find((t) => attr(t, 'data-tab') === name);
-            return t ? (activate(t, { animate: true }), true) : false;
-        };
+        const tabs = qsa('.tab-button', tabContainer);
+        const slider = qs('.tab-slider', tabContainer);
+        const contents = qsa('.content-section[data-content]');
 
-        function schedulePosition(tab, animate) {
-            if (wrapper.classList.contains('force-dropdown')) return;
-            cancelAnimationFrame(rafId);
-            if (!animate) wrapper.classList.add('no-anim');
-            rafId = requestAnimationFrame(() => {
-                let w = tab.offsetWidth;
-                const cs = getComputedStyle(wrapper);
-                const padL = parseFloat(cs.paddingLeft) || 0;
-                const padR = parseFloat(cs.paddingRight) || 0;
-                let x = tab.offsetLeft - padL;
-                const inner = wrapper.clientWidth - padL - padR;
-                if (x + w > inner) w = Math.max(0, inner - x);
-                setVar(wrapper, '--slider-w', w + 'px');
-                setVar(wrapper, '--slider-x', x + 'px');
-                if (!animate) requestAnimationFrame(() => wrapper.classList.remove('no-anim'));
+        function moveSlider(targetTab) {
+            if (!targetTab || !slider) return;
+            const targetRect = targetTab.getBoundingClientRect();
+            const containerRect = tabContainer.getBoundingClientRect();
+
+            const width = targetRect.width;
+            const transform = `translateX(${targetRect.left - containerRect.left}px)`;
+
+            slider.style.width = `${width}px`;
+            slider.style.transform = transform;
+        }
+
+        function activate(tab, isInitial = false) {
+            if (!tab) return;
+            const tabName = attr(tab, 'data-tab');
+
+            if (isInitial) {
+                slider.style.transition = 'none'; // Disable transition for initial set
+            }
+
+            moveSlider(tab);
+
+            if (isInitial) {
+                setTimeout(() => slider.style.transition = '', 50); // Re-enable after a tick
+            }
+
+            tabs.forEach(t => t.classList.toggle('active', t === tab));
+            contents.forEach(c => {
+                c.hidden = attr(c, 'data-content') !== tabName;
             });
         }
 
-        function activate(tab, { animate = true } = {}) {
-            tabs.forEach((t) => t.classList.toggle('active', t === tab));
-            const name = attr(tab, 'data-tab');
-            contents.forEach((c) => (c.hidden = attr(c, 'data-content') !== name));
-            schedulePosition(tab, animate);
+        function onHashChange(isInitial = false) {
+            const tabName = location.hash.slice(1);
+            const targetTab = qs(`.tab-button[data-tab="${tabName}"]`) || tabs[0];
+            activate(targetTab, isInitial);
         }
 
-        tabs.forEach((t) => on(t, 'click', () => {
-            const target = '#' + attr(t, 'data-tab');
-            location.hash !== target ? (location.hash = target) : activate(t);
-        }));
-        // Initial activation without animation to avoid first-paint jump
-        activateByName(location.hash.slice(1)) || activate(current(), { animate: false });
-        on(window, 'resize', () => {
-            applyLayoutMode();
-            if (!wrapper.classList.contains('force-dropdown')) activate(current(), { animate: false });
-        });
-        on(menuBtn, 'click', () => wrapper.classList.toggle('show'));
-
-        on(window, 'hashchange', () => { if (!activateByName(location.hash.slice(1))) activate(current()); });
-
-        function isOverflowing() { return wrapper.scrollWidth > wrapper.clientWidth; }
-        function applyLayoutMode() {
-            const dropdown = isOverflowing();
-            if (dropdown) {
-                wrapper.classList.add('force-dropdown');
-                header && header.classList.add('dropdown-mode');
-            } else {
-                wrapper.classList.remove('force-dropdown');
-                header && header.classList.remove('dropdown-mode');
+        tabs.forEach(tab => on(tab, 'click', () => {
+            const tabName = attr(tab, 'data-tab');
+            if (`#${tabName}` !== location.hash) {
+                location.hash = tabName;
             }
-        }
+        }));
 
-        // Observe size changes for robustness
-        const ro = new ResizeObserver(() => {
-            applyLayoutMode();
-            if (!wrapper.classList.contains('force-dropdown')) activate(current(), { animate: false });
+        on(window, 'hashchange', () => onHashChange(false));
+        onHashChange(true); // Initial activation
+
+        // Recalculate slider on resize
+        on(window, 'resize', () => {
+            const activeTab = qs('.tab-button.active');
+            moveSlider(activeTab);
         });
-        ro.observe(wrapper);
-        // Initial mode compute
-        applyLayoutMode();
-
-        return { activate, current };
     }
 
-    function initUI() {
-        // Tabs
-        initTabs({
-            wrapper: qs('#wrapper-tabs'),
-            slider: qs('#slider-bg'),
-            menuBtn: qs('#btn-show-menu'),
+    // --- Mobile Navigation Logic ---
+    function initMobileNav() {
+        const container = qs('.mobile-nav');
+        if (!container) return;
+
+        const toggleBtn = qs('#btn-mobile-nav');
+        const dropdown = qs('#mobile-nav-dropdown');
+        const titleEl = qs('#mobile-nav-title');
+        const mainTabs = qsa('.tab-button[data-tab]');
+
+        // 1. Populate dropdown from main tabs
+        dropdown.innerHTML = ''; // Clear existing
+        mainTabs.forEach(tab => {
+            const tabName = attr(tab, 'data-tab');
+            const link = document.createElement('button');
+            attr(link, 'role', 'menuitem');
+            attr(link, 'data-tab', tabName);
+            link.className = 'mobile-nav-link';
+            link.textContent = tab.textContent;
+            on(link, 'click', () => {
+                if (`#${tabName}` !== location.hash) {
+                    location.hash = tabName;
+                }
+                closeDropdown(); // Close after selection
+            });
+            dropdown.appendChild(link);
         });
 
-        // Popups
+        const mobileLinks = qsa('.mobile-nav-link', dropdown);
+
+        // 2. Handle dropdown visibility
+        const openDropdown = () => {
+            dropdown.classList.add('is-visible');
+            attr(toggleBtn, 'aria-expanded', 'true');
+        };
+        const closeDropdown = () => {
+            dropdown.classList.remove('is-visible');
+            attr(toggleBtn, 'aria-expanded', 'false');
+        };
+
+        on(toggleBtn, 'click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.contains('is-visible') ? closeDropdown() : openDropdown();
+        });
+
+        // 3. Close when clicking outside
+        on(document, 'click', (e) => {
+            if (!container.contains(e.target)) {
+                closeDropdown();
+            }
+        });
+
+        // 4. Sync active state and title with hash changes
+        const syncActiveState = () => {
+            const currentTabName = location.hash.slice(1) || attr(mainTabs[0], 'data-tab');
+            const activeTab = qs(`.tab-button[data-tab="${currentTabName}"]`);
+
+            // Sync dropdown links
+            mobileLinks.forEach(link => {
+                link.classList.toggle('active', attr(link, 'data-tab') === currentTabName);
+            });
+
+            // Sync mobile title
+            if (titleEl && activeTab) {
+                titleEl.textContent = activeTab.textContent;
+            }
+        };
+
+        on(window, 'hashchange', syncActiveState);
+        syncActiveState(); // Initial sync
+    }
+
+    // --- UI Initialization --- //
+    function initUI() {
+        initTabs();
+        initMobileNav();
         bindPopup(qs('#btn-show-settings'), qs('#popup-settings'), qs('#btn-popup-close-settings'));
         bindPopup(qs('#btn-show-info'), qs('#popup-info'), qs('#btn-popup-close-info'));
 
-        // Theme toggle (initial theme is applied inline in index.html to prevent flash)
         on(qs('#btn-toggle-theme'), 'click', () => {
             const current = attr(document.documentElement, 'data-theme');
             setTheme(current === 'dark' ? 'light' : 'dark');
