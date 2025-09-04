@@ -1,46 +1,39 @@
-/**
- * ==================================================================================
- * "robonxt" BRAND & DESIGN SYSTEM
- * ==================================================================================
- * All values are derived from the AI Design Instructions.
- * Do not modify these tokens directly. Adhere to the design system rules.
- */
+/* robonxt design tokens and base styles */
 
 :root {
     /* -------------------------------------------------------------------------- */
     /*                                    COLOR                                   */
     /* -------------------------------------------------------------------------- */
 
-    /* "robonxt" Brand Colors */
-    --robonxt-teal: #14B8A6;
-    --robonxt-crimson: #D94452;
-    --robonxt-paper: #F5F7FA;
-    --robonxt-deep-onyx: #161F27;
-    --robonxt-onyx: #1F2933;
-    --robonxt-slate: #343F4B;
-    --robonxt-medium-gray: #8A94A6;
-    --robonxt-light-gray: #E1E5EA;
-    --robonxt-green: #22C55E;
-    --robonxt-amber: #F59E0B;
+    /* Tokens */
+    --teal: #14B8A6;
+    --bold-red: #B91C1C;
+    --paper: #F5F7FA;
+    --deep-onyx: #161F27;
+    --onyx: #1F2933;
+    --slate: #343F4B;
+    --medium-gray: #8A94A6;
+    --light-gray: #E1E5EA;
+    --green: #22C55E;
+    --amber: #F59E0B;
 
-    /* Light Mode Semantic Tokens */
-    --color-primary: var(--robonxt-teal);
-    --color-accent: var(--robonxt-crimson);
-    --color-background: var(--robonxt-paper);
-    --color-surface: var(--robonxt-paper);
-    --color-text-high: var(--robonxt-slate);
-    --color-text-medium: var(--robonxt-medium-gray);
-    --color-text-low: var(--robonxt-light-gray);
-    --color-border-default: var(--robonxt-light-gray);
-    --color-border-focus: var(--robonxt-teal);
-    --color-success: var(--robonxt-green);
-    --color-warning: var(--robonxt-amber);
-    --color-error: var(--robonxt-crimson);
+    /* Light theme */
+    --color-primary: var(--teal);
+    --color-accent: var(--bold-red);
+    --color-background: var(--paper);
+    --color-surface: var(--paper);
+    --color-text-high: var(--slate);
+    --color-text-medium: var(--medium-gray);
+    --color-text-low: var(--light-gray);
+    --color-border-default: var(--light-gray);
+    --color-border-focus: var(--teal);
+    --color-success: var(--green);
+    --color-warning: var(--amber);
+    --color-error: var(--bold-red);
 
-    /* -------------------------------------------------------------------------- */
-    /*                                 TYPOGRAPHY                                 */
-    /* -------------------------------------------------------------------------- */
-    --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-family-base: var(--font-family);
 
     /* Typographic Scale */
     --font-size-jumbo: 10rem;   /* 160px */
@@ -98,31 +91,23 @@
     --radius-lg: 16px;
     --radius-full: 9999px;
 
-    /* -------------------------------------------------------------------------- */
-    /*                                   MOTION                                   */
-    /* -------------------------------------------------------------------------- */
+    /* Motion */
     --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
     --duration-quick: 150ms;
     --duration-medium: 300ms;
     --duration-slow: 500ms;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                 DARK THEME                                 */
-/* -------------------------------------------------------------------------- */
 [data-theme='dark'] {
-    --color-background: var(--robonxt-deep-onyx);
-    --color-surface: var(--robonxt-onyx);
-    --color-text-high: var(--robonxt-paper);
-    --color-text-low: var(--robonxt-slate);
-    --color-border-default: var(--robonxt-slate);
+    --color-background: var(--deep-onyx);
+    --color-surface: var(--onyx);
+    --color-text-high: var(--paper);
+    --color-text-low: var(--slate);
+    --color-border-default: var(--slate);
 }
 
-/**
- * ==================================================================================
- * BASE & RESET STYLES
- * ==================================================================================
- */
+/* Base & reset */
 
 /* 1. Basic Reset */
 *,
@@ -133,7 +118,6 @@
     padding: 0;
 }
 
-/* 2. Base HTML & Body */
 html {
     /* Set base font size to 16px for rem unit consistency */
     font-size: 100%;
@@ -152,7 +136,11 @@ body {
     transition: background-color var(--duration-medium) var(--ease-standard), color var(--duration-medium) var(--ease-standard);
 }
 
-/* 3. Typography Defaults */
+/* Prevent background scroll when overlays are open */
+body.scroll-lock {
+    overflow: hidden;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-heading);
@@ -179,7 +167,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* 4. Accessibility & Motion */
 :focus-visible {
     outline: var(--stroke-md) solid var(--color-border-focus);
     outline-offset: 2px;
@@ -197,20 +184,14 @@ a:hover {
     }
 }
 
-/**
- * ==================================================================================
- * LAYOUT & MAIN COMPONENTS
- * ==================================================================================
- */
+/* Layout & components */
 
-/* Main App Container */
 .app-container {
     max-width: 960px;
     margin: 0 auto;
     padding: var(--space-lg) var(--space-md);
 }
 
-/* Header Bar */
 .header-bar {
     position: sticky;
     top: 0;
@@ -244,7 +225,6 @@ a:hover {
     gap: var(--space-sm);
 }
 
-/* Tab Navigation (Pill Selector) */
 .tab-list {
     display: flex;
     background-color: color-mix(in srgb, var(--color-border-default) 50%, transparent);
@@ -275,11 +255,10 @@ a:hover {
     color: var(--color-text-high);
 }
 
-/* Pill slider */
 .tab-slider {
     position: absolute;
     top: 4px;
-    left: 0; /* Position is set by JS */
+    left: 0;
     height: calc(100% - 8px);
     background-color: var(--color-surface);
     border-radius: var(--radius-full);
@@ -288,7 +267,6 @@ a:hover {
     transition: transform var(--duration-medium) var(--ease-standard), width var(--duration-medium) var(--ease-standard);
 }
 
-/* Content Sections */
 .content-section {
     padding: var(--space-md);
     background-color: var(--color-surface);
@@ -296,11 +274,7 @@ a:hover {
     box-shadow: var(--shadow-md);
 }
 
-/**
- * ==================================================================================
- * BUTTON COMPONENTS
- * ==================================================================================
- */
+/* Buttons */
 
 .btn {
     display: inline-flex;
@@ -322,17 +296,6 @@ a:hover {
     transition-timing-function: var(--ease-standard);
 }
 
-/* Primary Button */
-.btn-primary {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: color-mix(in srgb, var(--color-primary), black 10%);
-    color: white;
-}
-
 /* Secondary/Accent Button */
 .btn-secondary {
     background-color: var(--color-accent);
@@ -342,28 +305,6 @@ a:hover {
 .btn-secondary:hover {
     background-color: color-mix(in srgb, var(--color-accent), black 10%);
     color: white;
-}
-
-/* Outline Button */
-.btn-outline {
-    background-color: transparent;
-    border-color: var(--color-border-default);
-    color: var(--color-text-high);
-}
-
-.btn-outline:hover {
-    background-color: var(--color-surface);
-    border-color: var(--color-text-high);
-}
-
-/* Ghost Button */
-.btn-ghost {
-    background-color: transparent;
-    color: var(--color-text-high);
-}
-
-.btn-ghost:hover {
-    background-color: color-mix(in srgb, var(--color-text-high) 10%, transparent);
 }
 
 /* Icon Button (Ghost by default) */
@@ -387,12 +328,12 @@ a:hover {
 
 /* Mobile Navigation */
 .mobile-nav {
-    display: none; /* Hidden by default */
+    display: none;
     position: relative;
 }
 
 .mobile-nav-title {
-    display: none; /* Hidden on desktop */
+    display: none;
     font-size: var(--font-size-h3);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-high);
@@ -401,7 +342,7 @@ a:hover {
 .mobile-nav-dropdown {
     position: absolute;
     top: calc(100% + 8px);
-    left: 0; /* Align to the left */
+    left: 0;
     background-color: var(--color-surface);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
@@ -453,7 +394,7 @@ a:hover {
     opacity: 0.6;
 }
 
-.btn-outline:disabled, .btn-ghost:disabled, .btn-icon:disabled {
+.btn-icon:disabled {
     background-color: transparent;
     border-color: var(--color-border-default);
     color: var(--color-text-low);
