@@ -32,27 +32,16 @@
 
     /* Typographic Scale */
     --font-size-jumbo: 10rem;
-    /* 160px */
     --font-size-display-xl: 6rem;
-    /* 96px */
     --font-size-h1: 2.25rem;
-    /* 36px */
     --font-size-h2: 1.5rem;
-    /* 24px */
     --font-size-h3: 1.25rem;
-    /* 20px */
     --font-size-body-lead: 1.125rem;
-    /* 18px */
     --font-size-body-base: 1rem;
-    /* 16px */
     --font-size-label: 0.875rem;
-    /* 14px */
     --font-size-caption: 0.875rem;
-    /* 14px */
     --font-size-micro: 0.75rem;
-    /* 12px */
     --font-size-fine-print: 0.625rem;
-    /* 10px */
 
     /* Font Weights */
     --font-weight-black: 900;
