@@ -31,17 +31,28 @@
     --font-family-base: var(--font-family);
 
     /* Typographic Scale */
-    --font-size-jumbo: 10rem;   /* 160px */
-    --font-size-display-xl: 6rem; /* 96px */
-    --font-size-h1: 2.25rem;  /* 36px */
-    --font-size-h2: 1.5rem;   /* 24px */
-    --font-size-h3: 1.25rem;  /* 20px */
-    --font-size-body-lead: 1.125rem; /* 18px */
-    --font-size-body-base: 1rem;     /* 16px */
-    --font-size-label: 0.875rem; /* 14px */
-    --font-size-caption: 0.875rem; /* 14px */
-    --font-size-micro: 0.75rem;  /* 12px */
-    --font-size-fine-print: 0.625rem; /* 10px */
+    --font-size-jumbo: 10rem;
+    /* 160px */
+    --font-size-display-xl: 6rem;
+    /* 96px */
+    --font-size-h1: 2.25rem;
+    /* 36px */
+    --font-size-h2: 1.5rem;
+    /* 24px */
+    --font-size-h3: 1.25rem;
+    /* 20px */
+    --font-size-body-lead: 1.125rem;
+    /* 18px */
+    --font-size-body-base: 1rem;
+    /* 16px */
+    --font-size-label: 0.875rem;
+    /* 14px */
+    --font-size-caption: 0.875rem;
+    /* 14px */
+    --font-size-micro: 0.75rem;
+    /* 12px */
+    --font-size-fine-print: 0.625rem;
+    /* 10px */
 
     /* Font Weights */
     --font-weight-black: 900;
@@ -63,7 +74,8 @@
     --space-lg: 32px;
     --space-xl: 48px;
     --space-2xl: 64px;
-    --space-2xs: 4px; /* half step for compact UI elements */
+    --space-2xs: 4px;
+    /* half step for compact UI elements */
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -156,16 +168,31 @@ body.scroll-lock {
     overflow: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-heading);
     letter-spacing: var(--letter-spacing-heading);
     color: var(--color-text-high);
 }
 
-h1 { font-size: var(--font-size-h1); }
-h2 { font-size: var(--font-size-h2); font-weight: var(--font-weight-semibold); }
-h3 { font-size: var(--font-size-h3); font-weight: var(--font-weight-semibold); }
+h1 {
+    font-size: var(--font-size-h1);
+}
+
+h2 {
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-semibold);
+}
+
+h3 {
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-semibold);
+}
 
 p {
     margin-bottom: var(--space-sm);
@@ -189,6 +216,7 @@ a:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -216,7 +244,8 @@ a:hover {
 
 .header-bar-content {
     display: grid;
-    grid-template-columns: 1fr auto; /* Left (nav), Right (controls) */
+    grid-template-columns: 1fr auto;
+    /* Left (nav), Right (controls) */
     align-items: center;
     max-width: 960px;
     margin: 0 auto;
@@ -227,8 +256,8 @@ a:hover {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
     transition: background-color var(--duration-medium) var(--ease-standard),
-                border-color var(--duration-medium) var(--ease-standard),
-                box-shadow var(--duration-medium) var(--ease-standard);
+        border-color var(--duration-medium) var(--ease-standard),
+        box-shadow var(--duration-medium) var(--ease-standard);
 }
 
 .header-left {
@@ -274,7 +303,8 @@ a:hover {
 }
 
 .tab-button.active {
-    color: white; /* On primary slider for contrast */
+    color: white;
+    /* On primary slider for contrast */
 }
 
 .tab-slider {
@@ -403,9 +433,11 @@ a:hover {
     background-color: var(--color-danger, var(--bold-red));
     color: white;
 }
+
 .btn-danger:hover:not(:disabled) {
     background-color: color-mix(in srgb, var(--color-danger, var(--bold-red)), black 10%);
 }
+
 .btn-danger:active:not(:disabled) {
     background-color: color-mix(in srgb, var(--color-danger, var(--bold-red)), black 15%);
 }
@@ -500,9 +532,11 @@ a:hover {
     font-size: var(--icon-md);
     color: var(--color-text-medium);
 }
+
 .mobile-nav-link.active .menu-icon {
     color: var(--color-primary);
 }
+
 .mobile-nav-link .menu-label {
     flex: 1 1 auto;
 }
@@ -599,15 +633,12 @@ a:hover {
     display: none;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 420px) {
     .tab-list {
         display: none;
     }
 
-    .mobile-nav {
-        display: block;
-    }
-
+    .mobile-nav,
     .mobile-nav-title {
         display: block;
     }
