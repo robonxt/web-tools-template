@@ -1,11 +1,11 @@
 (function () {
-    // Utility functions
+    // Utils
     const qs = (sel, root = document) => root.querySelector(sel);
     const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
     const on = (el, type, handler, opts) => el && el.addEventListener(type, handler, opts);
     const attr = (el, name, value) => (value === undefined ? el.getAttribute(name) : el.setAttribute(name, value));
 
-    // --- Service Worker --- //
+    // Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker
@@ -32,23 +32,23 @@
         });
     }
 
-    // --- Theme Management --- //
+    // Theme
     const THEME_KEY = 'theme';
     const setTheme = (next) => {
         attr(document.documentElement, 'data-theme', next);
         try { localStorage.setItem(THEME_KEY, next); } catch { /* ignore */ }
     };
 
-    // --- Popup (Modal) Logic --- //
-    function bindPopup(triggerBtn, popupEl, closeBtn) {
-        if (!popupEl) return;
-        const dialog = popupEl.querySelector('.popup-dialog');
+    // Modal
+    function bindModal(triggerBtn, modalEl, closeBtn) {
+        if (!modalEl) return;
+        const dialog = modalEl.querySelector('.modal-dialog');
         let lastFocus = null;
         const focusableElements = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
         const trapFocus = (e) => {
             if (e.key !== 'Tab') return;
-            const focusable = Array.from(popupEl.querySelectorAll(focusableElements));
+            const focusable = Array.from(modalEl.querySelectorAll(focusableElements));
             if (!focusable.length) return e.preventDefault();
             const first = focusable[0];
             const last = focusable[focusable.length - 1];
@@ -60,18 +60,18 @@
 
         const open = () => {
             lastFocus = document.activeElement;
-            popupEl.classList.add('is-visible');
-            attr(popupEl, 'aria-hidden', 'false');
+            modalEl.classList.add('is-visible');
+            attr(modalEl, 'aria-hidden', 'false');
             document.body.classList.add('scroll-lock');
             on(document, 'keydown', trapFocus);
             on(document, 'keydown', onEsc);
-            const firstFocusable = popupEl.querySelector(focusableElements);
-            (firstFocusable || dialog || popupEl).focus();
+            const firstFocusable = modalEl.querySelector(focusableElements);
+            (firstFocusable || dialog || modalEl).focus();
         };
 
         const close = () => {
-            popupEl.classList.remove('is-visible');
-            attr(popupEl, 'aria-hidden', 'true');
+            modalEl.classList.remove('is-visible');
+            attr(modalEl, 'aria-hidden', 'true');
             document.body.classList.remove('scroll-lock');
             document.removeEventListener('keydown', trapFocus);
             document.removeEventListener('keydown', onEsc);
@@ -82,10 +82,10 @@
 
         on(triggerBtn, 'click', open);
         on(closeBtn, 'click', close);
-        on(popupEl, 'click', (e) => { if (e.target === popupEl) close(); });
+        on(modalEl, 'click', (e) => { if (e.target === modalEl) close(); });
     }
 
-    // --- Tab Navigation Logic --- //
+    // Tabs
     function initTabs() {
         const tabContainer = qs('#wrapper-tabs');
         if (!tabContainer) return;
@@ -142,14 +142,14 @@
         on(window, 'hashchange', () => onHashChange(false));
         onHashChange(true); // Initial activation
 
-        // Recalculate slider on resize
+        // Resize
         on(window, 'resize', () => {
             const activeTab = qs('.tab-button.active');
             moveSlider(activeTab);
         });
     }
 
-    // --- Mobile Navigation Logic ---
+    // Mobile nav
     function initMobileNav() {
         const container = qs('.mobile-nav');
         if (!container) return;
@@ -159,34 +159,64 @@
         const titleEl = qs('#mobile-nav-title');
         const mainTabs = qsa('.tab-button[data-tab]');
 
-        // 1. Populate dropdown from main tabs
-        dropdown.innerHTML = ''; // Clear existing
-        mainTabs.forEach(tab => {
+        // Build dropdown from tabs
+        dropdown.innerHTML = '';
+        dropdown.setAttribute('role', 'menu');
+        dropdown.setAttribute('aria-labelledby', 'btn-mobile-nav');
+        mainTabs.forEach((tab, idx) => {
             const tabName = attr(tab, 'data-tab');
             const link = document.createElement('button');
             attr(link, 'role', 'menuitem');
             attr(link, 'data-tab', tabName);
             link.className = 'mobile-nav-link';
-            link.textContent = tab.textContent;
+            const iconMap = {
+                home: 'home',
+                about: 'info',
+                contact: 'mail'
+            };
+            const iconName = iconMap[tabName] || 'chevron_right';
+            const icon = document.createElement('span');
+            icon.className = 'material-symbols-rounded menu-icon';
+            icon.textContent = iconName;
+            const label = document.createElement('span');
+            label.className = 'menu-label';
+            label.textContent = tab.textContent;
+            link.appendChild(icon);
+            link.appendChild(label);
+            link.type = 'button';
+            link.tabIndex = -1;
             on(link, 'click', () => {
                 if (`#${tabName}` !== location.hash) {
                     location.hash = tabName;
                 }
-                closeDropdown(); // Close after selection
+                closeDropdown();
             });
             dropdown.appendChild(link);
+            if (idx < mainTabs.length - 1) {
+                const divider = document.createElement('div');
+                divider.className = 'menu-divider';
+                divider.setAttribute('role', 'separator');
+                dropdown.appendChild(divider);
+            }
         });
 
         const mobileLinks = qsa('.mobile-nav-link', dropdown);
 
-        // 2. Handle dropdown visibility
+        // Visibility
+        const focusFirstItem = () => {
+            const first = mobileLinks[0];
+            if (first) first.focus();
+        };
+
         const openDropdown = () => {
             dropdown.classList.add('is-visible');
             attr(toggleBtn, 'aria-expanded', 'true');
+            setTimeout(focusFirstItem, 0);
         };
         const closeDropdown = () => {
             dropdown.classList.remove('is-visible');
             attr(toggleBtn, 'aria-expanded', 'false');
+            toggleBtn.focus();
         };
 
         on(toggleBtn, 'click', (e) => {
@@ -194,14 +224,55 @@
             dropdown.classList.contains('is-visible') ? closeDropdown() : openDropdown();
         });
 
-        // 3. Close when clicking outside
+        on(toggleBtn, 'keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                dropdown.classList.contains('is-visible') ? closeDropdown() : openDropdown();
+            }
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (!dropdown.classList.contains('is-visible')) openDropdown();
+                setTimeout(focusFirstItem, 0);
+            }
+        });
+
         on(document, 'click', (e) => {
             if (!container.contains(e.target)) {
                 closeDropdown();
             }
         });
 
-        // 4. Sync active state and title with hash changes
+        on(dropdown, 'keydown', (e) => {
+            const currentIndex = mobileLinks.indexOf(document.activeElement);
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeDropdown();
+                return;
+            }
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const next = currentIndex < 0 ? 0 : (currentIndex + 1) % mobileLinks.length;
+                mobileLinks[next]?.focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prev = currentIndex < 0 ? mobileLinks.length - 1 : (currentIndex - 1 + mobileLinks.length) % mobileLinks.length;
+                mobileLinks[prev]?.focus();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                mobileLinks[0]?.focus();
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                mobileLinks[mobileLinks.length - 1]?.focus();
+            } else if (e.key === 'Enter' || e.key === ' ') {
+                // Activate focused item
+                if (document.activeElement && document.activeElement.classList.contains('mobile-nav-link')) {
+                    e.preventDefault();
+                    document.activeElement.click();
+                }
+            }
+        });
+
+        // Sync active state
         const syncActiveState = () => {
             const currentTabName = location.hash.slice(1) || attr(mainTabs[0], 'data-tab');
             const activeTab = qs(`.tab-button[data-tab="${currentTabName}"]`);
@@ -218,15 +289,15 @@
         };
 
         on(window, 'hashchange', syncActiveState);
-        syncActiveState(); // Initial sync
+        syncActiveState();
     }
 
-    // --- UI Initialization --- //
+    // Init
     function initUI() {
         initTabs();
         initMobileNav();
-        bindPopup(qs('#btn-show-settings'), qs('#popup-settings'), qs('#btn-popup-close-settings'));
-        bindPopup(qs('#btn-show-info'), qs('#popup-info'), qs('#btn-popup-close-info'));
+        bindModal(qs('#btn-show-settings'), qs('#modal-settings'), qs('#btn-modal-close-settings'));
+        bindModal(qs('#btn-show-info'), qs('#modal-info'), qs('#btn-modal-close-info'));
 
         on(qs('#btn-toggle-theme'), 'click', () => {
             const current = attr(document.documentElement, 'data-theme');
