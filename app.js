@@ -5,38 +5,30 @@
     const on = (el, type, handler, opts) => el && el.addEventListener(type, handler, opts);
     const attr = (el, name, value) => (value === undefined ? el.getAttribute(name) : el.setAttribute(name, value));
 
-    // Service Worker
+    // Service Worker (register silently; update flow handled via modal elsewhere)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker
                 .register('sw.js')
-                .then(() => {
-                    const btnUpdate = qs('#btn-update-app');
-                    if (!btnUpdate) return;
-                    on(btnUpdate, 'click', async () => {
-                        if (!confirm('This will clear ALL cached data (including preferences) and force a fresh update. Continue?')) return;
-                        try {
-                            localStorage.clear();
-                            const cacheNames = await caches.keys();
-                            await Promise.all(cacheNames.map((name) => caches.delete(name)));
-                            const registration = await navigator.serviceWorker.getRegistration();
-                            if (registration) await registration.unregister();
-                            window.location.reload(true);
-                        } catch (error) {
-                            console.error('Update failed:', error);
-                            alert('Update failed. Please check console for details.');
-                        }
-                    });
-                })
                 .catch((error) => console.warn('Service Worker registration failed:', error));
         });
     }
 
     // Theme
     const THEME_KEY = 'theme';
+    function updateThemeMeta() {
+        // Use computed CSS variable to set <meta name="theme-color"> to the background color
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (!meta) return;
+        const cs = getComputedStyle(document.documentElement);
+        const bg = cs.getPropertyValue('--color-background').trim();
+        if (bg) meta.setAttribute('content', bg);
+    }
+
     const setTheme = (next) => {
         attr(document.documentElement, 'data-theme', next);
         try { localStorage.setItem(THEME_KEY, next); } catch { /* ignore */ }
+        updateThemeMeta();
     };
 
     // Modal
@@ -85,45 +77,36 @@
         on(modalEl, 'click', (e) => { if (e.target === modalEl) close(); });
     }
 
-    // Tabs
+    // Tabs (sample website parity: .active class + data-target)
     function initTabs() {
         const tabContainer = qs('#wrapper-tabs');
         if (!tabContainer) return;
 
         const tabs = qsa('.tab-button', tabContainer);
         const slider = qs('.tab-slider', tabContainer);
-        const contents = qsa('.content-section[data-content]');
+        const panels = qsa('.content-section[data-content]');
 
         function moveSlider(targetTab) {
             if (!targetTab || !slider) return;
             const targetRect = targetTab.getBoundingClientRect();
             const containerRect = tabContainer.getBoundingClientRect();
-
             const width = targetRect.width;
             const transform = `translateX(${targetRect.left - containerRect.left}px)`;
-
             slider.style.width = `${width}px`;
             slider.style.transform = transform;
         }
 
         function activate(tab, isInitial = false) {
             if (!tab) return;
-            const tabName = attr(tab, 'data-tab');
-
-            if (isInitial) {
-                slider.style.transition = 'none'; // Disable transition for initial set
-            }
-
-            moveSlider(tab);
-
-            if (isInitial) {
-                setTimeout(() => slider.style.transition = '', 50); // Re-enable after a tick
-            }
-
+            const targetSel = attr(tab, 'data-target');
+            if (isInitial && slider) slider.style.transition = 'none';
             tabs.forEach(t => t.classList.toggle('active', t === tab));
-            contents.forEach(c => {
-                c.hidden = attr(c, 'data-content') !== tabName;
-            });
+            // Toggle panels inline (no helper function)
+            panels.forEach(p => { p.hidden = true; });
+            const target = targetSel ? qs(targetSel) : null;
+            if (target) target.hidden = false;
+            moveSlider(tab);
+            if (isInitial && slider) setTimeout(() => (slider.style.transition = ''), 50);
         }
 
         function onHashChange(isInitial = false) {
@@ -136,15 +119,16 @@
             const tabName = attr(tab, 'data-tab');
             if (`#${tabName}` !== location.hash) {
                 location.hash = tabName;
+            } else {
+                activate(tab, false);
             }
         }));
 
         on(window, 'hashchange', () => onHashChange(false));
         onHashChange(true); // Initial activation
 
-        // Resize
         on(window, 'resize', () => {
-            const activeTab = qs('.tab-button.active');
+            const activeTab = qs('.tab-button.active', tabContainer);
             moveSlider(activeTab);
         });
     }
@@ -298,11 +282,49 @@
         initMobileNav();
         bindModal(qs('#btn-show-settings'), qs('#modal-settings'), qs('#btn-modal-close-settings'));
         bindModal(qs('#btn-show-info'), qs('#modal-info'), qs('#btn-modal-close-info'));
+        // Update flow modal
+        bindModal(qs('#btn-update-app'), qs('#modal-update'), qs('#btn-modal-close-update'));
 
         on(qs('#btn-toggle-theme'), 'click', () => {
             const current = attr(document.documentElement, 'data-theme');
             setTheme(current === 'dark' ? 'light' : 'dark');
         });
+        // Wire update confirm/cancel
+        const btnUpdateConfirm = qs('#btn-update-confirm');
+        const btnUpdateCancel = qs('#btn-update-cancel');
+        const btnUpdateClose = qs('#btn-modal-close-update');
+        const overlayUpdate = qs('#modal-update');
+
+        on(btnUpdateCancel, 'click', () => {
+            // Close via the existing close button to ensure focus trap cleanup
+            btnUpdateClose && btnUpdateClose.click();
+        });
+
+        on(btnUpdateConfirm, 'click', async () => {
+            // Optional: basic disabling to prevent double-click
+            if (btnUpdateConfirm) btnUpdateConfirm.disabled = true;
+            try {
+                try { localStorage.clear(); } catch {}
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map((name) => caches.delete(name)));
+                }
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) await registration.unregister();
+                }
+                // Close modal before reload for cleanliness
+                if (btnUpdateClose) btnUpdateClose.click();
+                window.location.reload(true);
+            } catch (error) {
+                console.error('Update failed:', error);
+                alert('Update failed. Please check console for details.');
+                if (btnUpdateConfirm) btnUpdateConfirm.disabled = false;
+            }
+        });
+
+        // Ensure meta theme-color matches initial computed theme
+        updateThemeMeta();
     }
 
     if (document.readyState === 'loading') {

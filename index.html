@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Template Starter</title>
     <meta name="description" content="Reusable header/toolbar/tabs starter with PWA support.">
-    <meta name="theme-color" content="#14B8A6">
+    <meta name="theme-color" content="#FFFFFF">
     <!-- Brand Icons -->
     <link rel="icon" type="image/x-icon" href="assets/icon/sample-favicon.ico">
     <link rel="icon" type="image/svg+xml" href="assets/icon/sample-favicon.svg" />
@@ -25,6 +25,7 @@
                 var saved = localStorage.getItem('theme');
                 var theme = saved ? saved : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-theme', theme);
+                // theme-color will be synchronized by app.js using CSS variables
             } catch (e) {
                 document.documentElement.setAttribute('data-theme', 'light');
             }
@@ -35,53 +36,97 @@
 
 <body>
 
-    <header class="header-bar">
-        <div class="header-bar-content">
-            <div class="header-left">
-                <div class="mobile-nav">
-                    <button class="btn btn-icon" id="btn-mobile-nav" aria-label="Open Menu" aria-haspopup="true"
-                        aria-expanded="false">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <use href="assets/icon/icon-menu.svg#icon-menu" />
-                        </svg>
-                    </button>
-                    <div class="mobile-nav-dropdown" id="mobile-nav-dropdown" role="menu"></div>
-                </div>
-                <div class="mobile-nav-title" id="mobile-nav-title"></div>
-                <nav class="tab-list" id="wrapper-tabs">
-                    <div class="tab-slider"></div>
-                    <button class="tab-button active" data-tab="home">Home</button>
-                    <button class="tab-button" data-tab="about">About</button>
-                    <button class="tab-button" data-tab="contact">Contact</button>
-                </nav>
-            </div>
-
-            <div class="header-controls">
-                <button class="btn btn-icon" id="btn-show-settings" aria-label="Show Settings" title="Settings">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <use href="assets/icon/icon-settings.svg#icon-settings" />
-                    </svg>
+    <header class="page-header container">
+        <div class="header-left">
+            <div class="mobile-nav">
+                <button class="btn btn-icon" id="btn-mobile-nav" aria-label="Open Menu" aria-haspopup="true"
+                    aria-expanded="false">
+                <span class="material-symbols-rounded" aria-hidden="true">menu</span>
                 </button>
-                <button class="btn btn-icon" id="btn-show-info" aria-label="Show Information" title="Info">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <use href="assets/icon/icon-info.svg#icon-info" />
-                    </svg>
-                </button>
+                <div class="mobile-nav-dropdown" id="mobile-nav-dropdown" role="menu"></div>
             </div>
+            <div class="mobile-nav-title" id="mobile-nav-title"></div>
+            <nav class="tab-list" id="wrapper-tabs">
+                <div class="tab-slider"></div>
+                <button class="tab-button active" data-tab="home" data-target="#panel-home">Home</button>
+                <button class="tab-button" data-tab="about" data-target="#panel-about">About</button>
+                <button class="tab-button" data-tab="contact" data-target="#panel-contact">Contact</button>
+            </nav>
+        </div>
+        <div class="header-controls">
+            <button class="btn btn-icon" id="btn-show-settings" aria-label="Show Settings" title="Settings">
+            <span class="material-symbols-rounded" aria-hidden="true">settings</span>
+            </button>
+            <button class="btn btn-icon" id="btn-show-info" aria-label="Show Information" title="Info">
+            <span class="material-symbols-rounded" aria-hidden="true">info</span>
+            </button>
         </div>
     </header>
 
     <main class="app-container">
 
-        <section class="content-section" data-content="home">
+        <section class="content-section" id="panel-home" data-content="home">
             <h3>Sample Content</h3>
             <p>
-                This is your first tab's content area. Replace this with your app's home content,
-                components, or documentation.
+                This starter ships with tokens, components, and interactions aligned to the robonxt visual guidelines.
             </p>
+
+            <div class="menu-divider" role="separator" aria-hidden="true"></div>
+
+            <h4 style="margin-top: var(--space-md);">Buttons</h4>
+            <div style="display:flex; gap: var(--space-sm); flex-wrap: wrap; margin: var(--space-sm) 0;">
+                <button class="btn btn-primary">Primary</button>
+                <button class="btn btn-secondary">Secondary</button>
+                <button class="btn btn-outline">Outline</button>
+                <button class="btn btn-ghost">Ghost</button>
+                <button class="btn btn-danger">Destructive</button>
+            </div>
+
+            <h4 style="margin-top: var(--space-md);">Input Field</h4>
+            <div class="form-field" style="max-width: 420px;">
+                <label for="sample-input" class="form-label">Label</label>
+                <input id="sample-input" type="text" placeholder="Type here" />
+                <div class="form-help">Helper text goes here.</div>
+            </div>
+
+            <div class="form-field" style="max-width: 420px; margin-top: var(--space-sm);">
+                <label for="sample-input-error" class="form-label">Label (Error)</label>
+                <input id="sample-input-error" class="input-error" type="text" aria-invalid="true" placeholder="Invalid state" />
+                <div class="form-help">Describe the error and how to resolve it.</div>
+            </div>
+
+            <h4 style="margin-top: var(--space-md);">Alerts</h4>
+            <div class="alert alert-success" role="status" style="margin-top: var(--space-sm);">
+                <span class="material-symbols-rounded" aria-hidden="true">check_circle</span>
+                <div>
+                    <div class="alert-title">Success</div>
+                    <div class="alert-desc">Your action completed successfully.</div>
+                </div>
+            </div>
+            <div class="alert alert-warning" role="status" style="margin-top: var(--space-sm);">
+                <span class="material-symbols-rounded" aria-hidden="true">warning</span>
+                <div>
+                    <div class="alert-title">Warning</div>
+                    <div class="alert-desc">Check details before proceeding.</div>
+                </div>
+            </div>
+            <div class="alert alert-error" role="status" style="margin-top: var(--space-sm);">
+                <span class="material-symbols-rounded" aria-hidden="true">error</span>
+                <div>
+                    <div class="alert-title">Error</div>
+                    <div class="alert-desc">There was a problem processing your request.</div>
+                </div>
+            </div>
+            <div class="alert alert-info" role="status" style="margin-top: var(--space-sm);">
+                <span class="material-symbols-rounded" aria-hidden="true">info</span>
+                <div>
+                    <div class="alert-title">Info</div>
+                    <div class="alert-desc">Here’s additional context for this section.</div>
+                </div>
+            </div>
         </section>
-        <section class="content-section" data-content="about" hidden>About content.</section>
-        <section class="content-section" data-content="contact" hidden>Contact content.</section>
+        <section class="content-section" id="panel-about" data-content="about" hidden>About content.</section>
+        <section class="content-section" id="panel-contact" data-content="contact" hidden>Contact content.</section>
     </main>
 
     <div class="overlay" id="modal-settings" role="dialog" aria-modal="true" aria-labelledby="heading-settings"
@@ -90,28 +135,20 @@
             <div class="modal-header">
                 <h2 id="heading-settings" class="modal-title">Settings</h2>
                 <button class="btn btn-icon btn-modal-close" id="btn-modal-close-settings" aria-label="Close">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <use href="assets/icon/icon-close.svg#icon-close" />
-                    </svg>
+                    <span class="material-symbols-rounded" aria-hidden="true">close</span>
                 </button>
             </div>
             <div class="modal-content" id="content-settings">
                 <div class="settings-grid">
                     <button id="btn-toggle-theme" class="btn btn-outline" title="Toggle Theme"
                         aria-label="Toggle Theme">
-                        <svg viewBox="0 0 24 24" fill="currentColor" class="icon-theme-light">
-                            <use href="assets/icon/icon-sun.svg#icon-sun" />
-                        </svg>
-                        <svg viewBox="0 0 24 24" fill="currentColor" class="icon-theme-dark">
-                            <use href="assets/icon/icon-moon.svg#icon-moon" />
-                        </svg>
+                        <span class="material-symbols-rounded icon-theme-light" aria-hidden="true">light_mode</span>
+                        <span class="material-symbols-rounded icon-theme-dark" aria-hidden="true">dark_mode</span>
                         Toggle Theme
                     </button>
                     <button id="btn-update-app" class="btn btn-danger" title="Install Updates"
                         aria-label="Install Updates">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <use href="assets/icon/icon-refresh.svg#icon-refresh" />
-                        </svg>
+                        <span class="material-symbols-rounded" aria-hidden="true">refresh</span>
                         Update
                     </button>
                 </div>
@@ -125,9 +162,7 @@
             <div class="modal-header">
                 <h2 id="heading-info" class="modal-title">About this Template</h2>
                 <button class="btn btn-icon btn-modal-close" id="btn-modal-close-info" aria-label="Close">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <use href="assets/icon/icon-close.svg#icon-close" />
-                    </svg>
+                    <span class="material-symbols-rounded" aria-hidden="true">close</span>
                 </button>
             </div>
             <div class="modal-content" id="content-info">
@@ -136,7 +171,30 @@
             </div>
         </div>
     </div>
-
+    <!-- Update Confirmation Modal -->
+    <div class="overlay" id="modal-update" role="dialog" aria-modal="true" aria-labelledby="heading-update"
+        aria-hidden="true">
+        <div class="modal-dialog" tabindex="-1">
+            <div class="modal-header">
+                <h2 id="heading-update" class="modal-title">Install Updates</h2>
+                <button class="btn btn-icon btn-modal-close" id="btn-modal-close-update" aria-label="Close">
+                    <span class="material-symbols-rounded" aria-hidden="true">close</span>
+                </button>
+            </div>
+            <div class="modal-content" id="content-update">
+                <p>This will clear cached data (including preferences) and reload the app to install the latest version.</p>
+                <p>Proceed with update?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="btn-update-cancel">Cancel</button>
+                <button class="btn btn-danger" id="btn-update-confirm">
+                    <span class="material-symbols-rounded" aria-hidden="true">refresh</span>
+                    Update Now
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <script src="app.js" defer></script>
 </body>
 
